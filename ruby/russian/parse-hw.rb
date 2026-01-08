@@ -25,6 +25,9 @@ def parse_data(entries)
         # get the capital letter to see the stress of the word
         begin
             stress_in_word = russian[/[А-ЯЁ]/].downcase
+            if russian.scan(/\p{Lu}/).length > 1
+              raise NoMethodError
+            end
             # replace the capital letter in the word to add it as blue in anki
             russian = russian.gsub(
                 /([А-Я])/, %(<span style='color: blue;'>#{stress_in_word}<\/span>)
@@ -33,8 +36,12 @@ def parse_data(entries)
             russian = russian.gsub(/(\d*\) )/, '')
         end
 
+        begin
         # remove first space from english part
         english = english.gsub(/^\s/, '')
+        rescue NoMethodError
+          p english
+        end
 
         parsed.push("#{english},#{russian}")
     end
